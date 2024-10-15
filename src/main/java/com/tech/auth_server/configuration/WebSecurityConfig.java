@@ -1,12 +1,11 @@
-package com.tech.auth_server;
+package com.tech.auth_server.configuration;
 
+import com.tech.auth_server.repo.UserRole;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configurers.oauth2.server.resource.OAuth2ResourceServerConfigurer;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -34,10 +33,15 @@ public class WebSecurityConfig {
     @Bean
     UserDetailsService userDetailsService(PasswordEncoder encoder) {
         List<UserDetails> users = new ArrayList<>();
-        var user = User.withUsername("admin")
+        var admin = User.withUsername("admin")
                 .password(encoder.encode("admin"))
-                .authorities("read", "write")
-                .roles("ADMIN")
+                .authorities(UserRole.ADMIN.getPermissions().toString())
+                .build();
+        users.add(admin);
+
+        var user = User.withUsername("user")
+                .password(encoder.encode("user"))
+                .authorities(UserRole.USER.getPermissions().toString())
                 .build();
         users.add(user);
 
